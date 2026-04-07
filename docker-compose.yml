@@ -54,11 +54,11 @@ services:
 
   scheduler:
     image: mcuadros/ofelia:latest
-    depends_on:
-      - agencies-back-on-track
+    container_name: scheduler
+    # NE TOUCHE À RIEN ICI, Docker Desktop s'en occupe :
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: daemon
+    command: daemon --docker
     labels:
-      ofelia.job-run.routine-quotidienne.schedule: "00 02 * * *"
-      ofelia.job-run.mon-job-quotidien.container: "agencies-back-on-track"
+      ofelia.job-run.routine.schedule: "00 02 * * *"
+      ofelia.job-run.routine.container: "agencies-back-on-track"
