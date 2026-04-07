@@ -60,5 +60,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: daemon --docker
     labels:
-      ofelia.job-run.routine.schedule: "00 02 * * *"
+      ofelia.job-run.routine.schedule: "00 08 * * *"
       ofelia.job-run.routine.container: "agencies-back-on-track"
