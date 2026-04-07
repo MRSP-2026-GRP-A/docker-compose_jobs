@@ -1,0 +1,64 @@
+services:
+  agencies-back-on-track:
+    container_name: agencies-back-on-track
+    build: ./AgenciesBackOnTrack_0.1
+    restart: no
+
+  dim_stop-back-on-track:
+    container_name: dim_stop-back-on-track
+    build: ./dim_stopBackOnTrack_0.1
+    restart: no
+    depends_on:
+      agencies-back-on-track:
+        condition: service_completed_successfully
+
+  dim_routes-back-on-track:
+    container_name: dim_routes-back-on-track
+    build: ./dim_routesBackOnTrack_0.1
+    restart: no
+    depends_on:
+      dim_stop-back-on-track:
+        condition: service_completed_successfully
+ 
+  dim_calendar-back-on-track:
+    container_name: dim_calendar-back-on-track
+    build: ./dim_calendarBackOnTrack_0.1
+    restart: no
+    depends_on:
+      dim_routes-back-on-track:
+        condition: service_completed_successfully
+    
+  fact_calendar-back-on-track:
+    container_name: fact_calendar-back-on-track
+    build: ./fact_calendarBackOnTrack_0.1
+    restart: no
+    depends_on:
+      dim_calendar-back-on-track:
+        condition: service_completed_successfully
+
+  fact_trip_stops-back-on-track:
+    container_name: fact_trip_stops-back-on-track
+    build: ./fact_trip_stopsBackOnTrack_0.1
+    restart: no
+    depends_on:
+      fact_calendar-back-on-track:
+        condition: service_completed_successfully
+
+  fact_trips-back-on-track:
+    container_name: fact_trips-back-on-track
+    build: ./fact_tripsBackOnTrack_0.1
+    restart: no
+    depends_on:
+      fact_trip_stops-back-on-track:
+        condition: service_completed_successfully
+
+  scheduler:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - agencies-back-on-track
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: daemon
+    labels:
+      ofelia.job-run.routine-quotidienne.schedule: "00 02 * * *"
+      ofelia.job-run.mon-job-quotidien.container: "agencies-back-on-track"
